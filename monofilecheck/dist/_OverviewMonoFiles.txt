@@ -1,0 +1,1 @@
+Filename	FirstEnergy[eV]	LastEnergy[eV]	Steps[eV]	EnergySlit[um]	Bandwidth[meV]	Photocurrent[A]	PhotonFlux[ph/s]	tempSE[K]	pDEFL[mbar]	Edge

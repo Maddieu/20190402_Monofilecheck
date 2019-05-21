@@ -1,0 +1,3 @@
+Filename	FirstEnergy[eV]	LastEnergy[eV]	Steps[eV]	EnergySlit[um]	Bandwidth[meV]	Photocurrent[A]	QMS Mass[amu/z]	PhotonFlux[ph/s]	tempSE[K]	pDEFL[mbar]	Edge
+Mn01AA01_001_Mono.txt	282	300	0.07	199.998	100.728	3.4854E-5	157.0	4945295223448.015630	1.355120E+1	6.460E-7	Carbon Edge	
+Mn01AA01_004_Mono.txt	525	545	0.14	179.997	230.481	1.2644E-4	157.0	9160763468203.744140	1.312580E+1	6.390E-7	Oxygen Edge	
