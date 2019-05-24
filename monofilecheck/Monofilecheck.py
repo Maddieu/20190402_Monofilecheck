@@ -5,7 +5,7 @@ import sys
 
 #os.chdir("D:\\Messdaten\\2016_05 Electrospray FeBpy FeAcac\\2019_04_25_PythonAnalyzerAnalysis_rawdata")
 
-os.chdir("D:\\Messdaten\\2019_03_ESI_FeBpy\\20190321_MnAcac_Python")
+#os.chdir("D:\\Messdaten\\2019_03_ESI_FeBpy\\20190321_MnAcac_Python")
 
 masslist = []
 deltamasslist = []
@@ -200,9 +200,9 @@ with open('_OverviewMonoFiles.txt', 'w') as file:
     file.write(f'{"Photocurrent[eV]": <18}')
     file.write(f'{"QMS Mass[amu/z]": <17}')
     file.write(f'{"QMS_dM": <9}')
-    file.write(f'{"UndulatorShift[mm]": <20}')
-    file.write(f'{"PhotonFlux[ph/s]": <25}')
-    file.write(f'{"TempSE[eV]": <17}')
+    file.write(f'{"UnduShift[mm]": <15}')
+    file.write(f'{"PhotonFlux[ph/s]": <21}')
+    file.write(f'{"TempSE[eV]": <12}')
     file.write(f'{"pDEFL[mbar]": <13}')
     file.write(f'{"Edge"}')
 
@@ -227,10 +227,16 @@ with open('_OverviewMonoFiles.txt', 'w') as file:
             photocurrent = monofilecontent[fileindex][0][5]
             mass = str(masslist[fileindex])
             deltamass = str(deltamasslist[fileindex])
-            photonflux = monofilecontent[fileindex][0][21]
-            tempSE = monofilecontent[fileindex][0][11]
+            photonflux = str(float(monofilecontent[fileindex][0][21]))
+            tempSE = str(float(monofilecontent[fileindex][0][11]))
             pdefl = monofilecontent[fileindex][0][16]
-            undushift = monofilecontent[fileindex][0][9]
+            undushift = str(round(float(monofilecontent[fileindex][0][9])))
+
+            #
+            #       note here, that the undulator shift is rounded!!
+            #       it shall only indicate if the scan was hor or neg/pos polarization
+            #
+
             edge = decideedge(firstenergy)
 
 
@@ -244,9 +250,9 @@ with open('_OverviewMonoFiles.txt', 'w') as file:
             file.write(f'{photocurrent: <18}')
             file.write(f'{mass: <17}')
             file.write(f'{deltamass: <9}')
-            file.write(f'{undushift: <20}')
-            file.write(f'{photonflux: <25}')
-            file.write(f'{tempSE: <17}')
+            file.write(f'{undushift: <15}')
+            file.write(f'{photonflux: <21}')
+            file.write(f'{tempSE: <12}')
             file.write(f'{pdefl: <13}')
 
             file.write(f'{edge}')
