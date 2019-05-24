@@ -5,9 +5,10 @@ import sys
 
 #os.chdir("D:\\Messdaten\\2016_05 Electrospray FeBpy FeAcac\\2019_04_25_PythonAnalyzerAnalysis_rawdata")
 
-os.chdir("D:\\Messdaten\\2019_03_ESI_FeBpy\\20190321_MnAcac_Python\\CoClTest")
+os.chdir("D:\\Messdaten\\2019_03_ESI_FeBpy\\20190321_MnAcac_Python")
 
 masslist = []
+deltamasslist = []
 monofilecontent = []
 filenameslist = []
 
@@ -56,6 +57,24 @@ firstmonoline = 0
 #   The name of the files (File1, File2, ...) will be listed in the list: "filenameslist"
 #
 #
+#
+####################################################################################################
+#
+#   20190524
+#
+#   output file is now written with so called: f strings:
+#       file.write(f'{"FirstEnergy[eV]": <17}')
+#                  the f' ... '  is the synthax for an fstring
+#
+#                       strings inside the ' ' have to be denoted with " "
+#
+#                                       the : is a more precise definition for the argument given before
+#                                           < means that the text orientation will start on the left side ( right: > )
+#                                           <17 means that the column will be 17 characters broad and
+#                                                           the filling will start from the left side
+#
+#
+#
 ###################################################
 ###################################################
 ###################################################
@@ -77,10 +96,9 @@ for currentdir, dirlist, filelist in os.walk(os.curdir):
             for linenumber in range(monofiletemp.__len__()):    #durchlaufe alle Lines
 
                 if monofiletemp[linenumber].startswith("# massfilter mass"):
-                    #massline = linenumber
                     masslist.append(float(monofiletemp[linenumber].split()[-1]))
-                    #print('current mass:', currentmass)
-                    #print(masslist)
+                if monofiletemp[linenumber].startswith("# massfilter dM"):
+                    deltamasslist.append(float(monofiletemp[linenumber].split()[-1]))
                 if monofiletemp[linenumber-3].startswith('# LEGEND'):       #Anfang der Legende vor 3 Zeilen gefunden
                     afterlegendstart = True
                 if (afterlegendstart == True) and monofiletemp[linenumber - 1].startswith('# -----'):   # Ende der Legende
@@ -151,6 +169,10 @@ def decideedge(firstenergy):
         return str('Nitrogen Edge')
     elif inrange(firstenergy, 200) is True:
         return str('Chlorine Edge')
+    elif inrange(firstenergy, 1230) is True:
+        return str('Terbium Edge')
+    elif inrange(firstenergy, 1285) is True:
+        return str('Dysprosium Edge')
     else:
         return str('Edge unknown')
 
@@ -159,60 +181,147 @@ def decideedge(firstenergy):
 
 
 with open('_OverviewMonoFiles.txt', 'w') as file:
-    #for filename in filenameslist:
-    #    file.write(filename + "\n")
 
-    file.write('Filename\tFirstEnergy[eV]\tLastEnergy[eV]\tSteps[eV]\tEnergySlit[um]\tBandwidth[meV]\tPhotocurrent[A]\tQMS Mass[amu/z]\tPhotonFlux[ph/s]\ttempSE[K]\tpDEFL[mbar]\tEdge')
+#
+#
+#       writing the header
+#
+#
+
+
+    columnstring = 'Filename'
+    columnwidth = columnstring.__len__()
+    file.write(f'{"Filename": <30}')
+    file.write(f'{"FirstEnergy[eV]": <17}')
+    file.write(f'{"LastEnergy[eV]": <16}')
+    file.write(f'{"Steps[eV]": <11}')
+    file.write(f'{"EnergySlit[eV]": <16}')
+    file.write(f'{"Bandwidth[eV]": <15}')
+    file.write(f'{"Photocurrent[eV]": <18}')
+    file.write(f'{"QMS Mass[amu/z]": <17}')
+    file.write(f'{"QMS_dM": <9}')
+    file.write(f'{"UndulatorShift[mm]": <20}')
+    file.write(f'{"PhotonFlux[ph/s]": <25}')
+    file.write(f'{"TempSE[eV]": <17}')
+    file.write(f'{"pDEFL[mbar]": <13}')
+    file.write(f'{"Edge"}')
+
+
     file.write('\n')
+    #file.write('Filename\tFirstEnergy[eV]\tLastEnergy[eV]\tSteps[eV]\tEnergySlit[um]\tBandwidth[meV]\tPhotocurrent[A]\tQMS Mass[amu/z]\tPhotonFlux[ph/s]\ttempSE[K]\tpDEFL[mbar]\tEdge')
 
+    file.write('\n')
 
     for fileindex in range(monofilecontent.__len__()):
         try:
-            #Write File Name
-            file.write(filenameslist[fileindex] + "\t")
+
+            #
+            # definition area
+            #
 
             firstenergy = monofilecontent[fileindex][0][3]
-            file.write(firstenergy + "\t")
-
             lastenergy = monofilecontent[fileindex][-1][3]
-            file.write(lastenergy + "\t")
-
-            stepwidth = round(float(monofilecontent[fileindex][1][3])-float(monofilecontent[fileindex][0][3]), 3)
-            #stepwidth = float(monofilecontent[fileindex][1][3])-float(monofilecontent[fileindex][0][3])
-            file.write(str(stepwidth) + "\t")
-
+            stepwidth = round(float(monofilecontent[fileindex][1][3]) - float(monofilecontent[fileindex][0][3]), 3)
             energyslit = monofilecontent[fileindex][0][6]
-            file.write(energyslit + "\t")
-
             bandwidth = monofilecontent[fileindex][0][7]
-            file.write(bandwidth + "\t")
-
             photocurrent = monofilecontent[fileindex][0][5]
-            file.write(photocurrent + "\t")
-
             mass = str(masslist[fileindex])
-            file.write(mass + "\t")
-
+            deltamass = str(deltamasslist[fileindex])
             photonflux = monofilecontent[fileindex][0][21]
-            file.write(photonflux + "\t")
-
             tempSE = monofilecontent[fileindex][0][11]
-            file.write(tempSE + "\t")
-
             pdefl = monofilecontent[fileindex][0][16]
-            file.write(pdefl + "\t")
-
+            undushift = monofilecontent[fileindex][0][9]
             edge = decideedge(firstenergy)
-            file.write(edge + "\t")
 
+
+            file.write(f'{filenameslist[fileindex]: <30}')
+            #                  1234567890123456789
+            file.write(f'{firstenergy: <17}')
+            file.write(f'{lastenergy: <16}')
+            file.write(f'{stepwidth: <11}')
+            file.write(f'{energyslit: <16}')
+            file.write(f'{bandwidth: <15}')
+            file.write(f'{photocurrent: <18}')
+            file.write(f'{mass: <17}')
+            file.write(f'{deltamass: <9}')
+            file.write(f'{undushift: <20}')
+            file.write(f'{photonflux: <25}')
+            file.write(f'{tempSE: <17}')
+            file.write(f'{pdefl: <13}')
+
+            file.write(f'{edge}')
 
             file.write('\n')
-        except:
-            errorcode = sys.exc_info()
+
+
+
+
+            pass
+        except Exception as errorcode:
+            #errorcode2 = sys.exc_info()
             print('error:', errorcode)
             with open('_Errorlog.txt', 'w') as errorfile:
-                errorfile.write('error:\t' + str(errorcode))
+                errorfile.write('in File:\t' +  filenameslist[fileindex] + '\t\t Error:\t' + str(errorcode))
             file.write('\n')
+
+
+    dothis = False
+
+
+    if dothis == True:
+        for fileindex in range(monofilecontent.__len__()):
+            try:
+                #Write File Name
+                file.write(filenameslist[fileindex] + "\t")
+
+                firstenergy = monofilecontent[fileindex][0][3]
+                file.write(firstenergy + "\t")
+
+                lastenergy = monofilecontent[fileindex][-1][3]
+                file.write(lastenergy + "\t")
+
+                stepwidth = round(float(monofilecontent[fileindex][1][3])-float(monofilecontent[fileindex][0][3]), 3)
+                #stepwidth = float(monofilecontent[fileindex][1][3])-float(monofilecontent[fileindex][0][3])
+                file.write(str(stepwidth) + "\t")
+
+                energyslit = monofilecontent[fileindex][0][6]
+                file.write(energyslit + "\t")
+
+                bandwidth = monofilecontent[fileindex][0][7]
+                file.write(bandwidth + "\t")
+
+                photocurrent = monofilecontent[fileindex][0][5]
+                file.write(photocurrent + "\t")
+
+                mass = str(masslist[fileindex])
+                file.write(mass + "\t")
+
+                deltamass = str(deltamasslist[fileindex])
+                file.write(deltamass + "\t")
+
+                photonflux = monofilecontent[fileindex][0][21]
+                file.write(photonflux + "\t")
+
+                tempSE = monofilecontent[fileindex][0][11]
+                file.write(tempSE + "\t")
+
+                pdefl = monofilecontent[fileindex][0][16]
+                file.write(pdefl + "\t")
+
+                undushift = monofilecontent[fileindex][0][9]
+                file.write(undushift + "\t")
+
+                edge = decideedge(firstenergy)
+                file.write(edge + "\t")
+
+
+                file.write('\n')
+            except:
+                errorcode = sys.exc_info()
+                print('error:', errorcode)
+                with open('_Errorlog.txt', 'w') as errorfile:
+                    errorfile.write('error:\t' + str(errorcode))
+                file.write('\n')
 
 
     #print('currentdir:', currentdir)
